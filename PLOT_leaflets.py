@@ -67,15 +67,15 @@ for counter, lipid in enumerate(lipids):
 	plt.setp(bp['boxes'], color=colors[counter])
 	bp2 = ax.boxplot(up, positions=[counter+0.175],showfliers=0)
 	plt.setp(bp2['boxes'], color=colors[counter])
-	p2 = ttest(up,low,counter)
-	print p2
+#	p2 = ttest(up,low,counter)
+#	print p2
 	
-plt.plot([-1,3.175],[67,67],color='orange', linestyle='dashed',linewidth=1,alpha=0.5)
-plt.plot([-1,3.175],[23,23],color='red', linestyle='dashed',linewidth=1,alpha=0.5)
-plt.plot([-1,3.175],[10,10],color='royalblue',linestyle='dashed', linewidth=1,alpha=0.5)
+#plt.plot([-1,3.175],[67,67],color='orange', linestyle='dashed',linewidth=1,alpha=0.5)
+#plt.plot([-1,3.175],[23,23],color='red', linestyle='dashed',linewidth=1,alpha=0.5)
+#plt.plot([-1,3.175],[10,10],color='royalblue',linestyle='dashed', linewidth=1,alpha=0.5)
 
 plt.ylabel('lipids bound (%)', fontsize=25 )
 plt.yticks(np.arange(0, 76, step=25))
 plt.xticks((-0.175,0.175,0.825,1.175,1.825,2.175), ('inner', 'outer', 'inner', 'outer', 'inner', 'outer'), rotation=45)
 plt.xlim([-0.5,2.5])
-plt.savefig('Leaflets.png')
+plt.savefig('Figs/Leaflets.png')

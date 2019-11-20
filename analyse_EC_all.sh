@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CD=`pwd`
+CD=`/sansom/s156a/bioc1535/EC_MEMPROT/Data/5us_analyses`
 
 cattrj () {
 mkdir -p $1
@@ -39,7 +39,7 @@ done
 }
 
 plot_all () {
-python PLOT_leaflets.py
+python EC_analysis/PLOT_leaflets.py
 }
 
 cd $CD
