@@ -75,22 +75,21 @@ echo -e aPO4 '\n' q | gmx make_ndx -f ../${1}/md_${1}_1.tpr -o Residue_distribut
 echo -e PO4 '\n' System | gmx trjconv -f ${1}/${1}.${2}.xtc -s ../${1}/md_${1}_${2}.tpr -boxcenter zero -b 0.5 -tu us -skip 1000 -o Residue_distribution/$1/md_${1}_${2}.po4.xtc -n Residue_distribution/$1/${1}_po4.ndx -center
 echo -e System | gmx trjconv -f Residue_distribution/$1/md_${1}_${2}.po4.xtc -s ../${1}/md_${1}_${2}.tpr -tu us -dump 5 -b 4.8 -o Residue_distribution/$1/md_${1}_${2}.po4.pdb
 python ../res_contact_z.py Residue_distribution/$1/md_${1}_${2}.po4.pdb Residue_distribution/$1/md_${1}_${2}.po4.xtc Residue_distribution/$1/md_${1}_${2}
-#awk -F, '{print $1","($2+$3+$4)}' md_${2}_${3}.csv > md_${2}_${3}_comb.csv
-#perl ../make_b_factor.pl md_${2}_${3}.po4.pdb md_${2}_${3}_comb.csv 1  md_${2}_${3}.pdb
-## below removes all <0.1 values
-#cat md_${2}_${3}.pdb | grep BB | awk '{print $4","$5","$8","$10}' | grep -v ",0.0..$" > md_${2}_${3}.txt
-#rm -f md_${2}_${3}.pdb 
-#for residue in GLY ALA ILE LEU PRO VAL PHE TRP TYR ASP GLU ARG HIS LYS SER THR CYS MET ASN GLN
-#do
-#        grep $residue analyse_z/*txt | awk -F ',' '{print $3}' > $residue.txt
-#done
-rm -f Residue_distribution/$1/*#*
+awk -F, '{print $1","($2+$3+$4)}' Residue_distribution/$1/md_${1}_${2}.csv > Residue_distribution/$1/md_${1}_${2}_comb.csv
+perl /sansom/s137/bioc1535/Desktop/CG_KIT/make_b_factor.pl Residue_distribution/$1/md_${1}_${2}.po4.pdb Residue_distribution/$1/md_${1}_${2}_comb.csv 1 Residue_distribution/$1/z_${1}_${2}.pdb
+grep -e BB -e SC* Residue_distribution/$1/z_${1}_${2}.pdb | awk '{print $4","$8","$10}' > Residue_distribution/z_${1}_${2}.pdb
+rm -f Residue_distribution/$1/z_${1}_${2}.pdb
 }
-
 
 plot_all () {
 python EC_analysis/PLOT_leaflets.py
-plot EC_analysis/PLOT_predicted_site.py
+python EC_analysis/PLOT_predicted_site.py
+python EC_analysis/PLOT_z_analysis.py ARG LYS HIS
+python EC_analysis/PLOT_z_analysis.py ASP GLU
+python EC_analysis/PLOT_z_analysis.py PHE ILE LEU VAL ALA
+python EC_analysis/PLOT_z_analysis.py ASN SER GLN THR
+python EC_analysis/PLOT_z_analysis.py CYS GLY PRO MET
+python EC_analysis/PLOT_z_analysis.py TRP TYR
 }
 
 cd $CD
