@@ -94,16 +94,16 @@ python EC_analysis/PLOT_z_analysis.py TRP TYR
 
 cd $CD
 
-for pdb in 5OQT #4JR9 2HI7 3O7P 1NEK 3ZE3 5MRW 5OC0 1ZCD 1PV6 3OB6 4IU8 1KF6 4KX6 3QE7 1KPK 5SV0 1U77 1FFT 5AJI 4ZP0 5AZC 1Q16 1FX8 6AL2 2QFI 3DHW 1IWG 3K07 4GD3 5JWY 3B5D 4Q65 1PW4 2R6G 4DJI 2WSX 1NEK 1L7V 1RC2 5ZUG 2IC8
+for pdb in 1FFT 1FX8 1KF6 1KPK 1NEK 5OQT 4JR9 2HI7 3O7P 3ZE3 1ZCD 5OC0 1PV6 3OB6 5MRW 5AZC 1Q16 2QFI 2IC8 1RC2 1IWG 2WSX 5JWY 3B5D 3DHW 1PW4 4Q65 4DJI 2R6G 4GD3 5ZUG 6AL2 1L7V 4IU8 4KX6 3QE7 5SV0 1U77 5AJI 4ZP0 3K07 #1KQF
 do
-	for num in 1 #2 3 4 5 
+	for num in 1 2 3 4 5 
 	do
-		#cattrj $pdb $num
-		#leaflet_analysis $pdb $num
-#		site_predict $pdb $num
+		cattrj $pdb $num
+		leaflet_analysis $pdb $num
+		site_predict $pdb $num
 		residue_distribution $pdb $num
 	done
-        #run_lipid_analysis $pdb
+        run_lipid_analysis $pdb
 done
 
-#plot_all
+plot_all
