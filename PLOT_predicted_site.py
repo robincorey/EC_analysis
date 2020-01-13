@@ -28,7 +28,7 @@ def plot_function(res,pdb,component):
 	        
 components = ['GL0'] #,'PO2PO1','GL2GL1GL3GL4','CD'] 
 residues = ['GLY','ALA','ILE','LEU','PRO','VAL','PHE','TRP','TYR','ASP','GLU','ARG','HIS','LYS','SER','THR','CYS','MET','ASN','GLN']
-pdbs = ['5OQT'] #,'1KQF','2IC8','5ZUG','4JR9','3O7P','1NEK','3ZE3','5MRW','5OC0','1ZCD','1PV6','3OB6','4IU8','1KF6','3QE7','1KPK','5SV0','1U77','1FFT','5AJI','4ZP0','5AZC','1Q16','1FX8','6AL2' ] #,'2QFI','3DHW','1IWG','3K07','4GD3','5JWY','3B5D','4Q65','1PW4','2R6G','4DJI','2WSX','1L7V','1RC2']
+pdbs = ['5OQT','1KQF','2IC8','5ZUG','4JR9','3O7P','1NEK','3ZE3','5MRW','5OC0','1ZCD','1PV6','3OB6','4IU8','1KF6','3QE7','1KPK','5SV0','1U77','1FFT','5AJI','4ZP0','5AZC','1Q16','1FX8','6AL2' , '2QFI','3DHW','1IWG','3K07','4GD3','5JWY','3B5D','4Q65','1PW4','2R6G','4DJI','2WSX','1L7V','1RC2']
 
 fig = plt.figure()
 ax = fig.add_subplot(111)

@@ -7,7 +7,7 @@ cattrj () {
 mkdir -p $1
 if [[ ! -f $1/$1.$2.xtc ]]
 then
-	echo -e Protein '\n' System | gmx trjcat -f ../$1/md_$1_$2*.xtc -o $1/$1.$2.xtc -cat
+	echo -e Protein '\n' System | gmx trjcat -f ../$1/md_$1_$2*.xtc -o $1/$1.$2.xtc -cat -dt 1000
 fi
 }
 
@@ -97,19 +97,21 @@ cd $CD
 
 #initialise
 
-for pdb in 1FFT #1FX8 1KF6 1KPK 1NEK 5OQT 4JR9 2HI7 3O7P 3ZE3 1ZCD 5OC0 1PV6 3OB6 5MRW 5AZC 1Q16 2QFI 2IC8 1RC2 1IWG 2WSX 5JWY 3B5D 3DHW 1PW4 4Q65 4DJI 2R6G 4GD3 5ZUG 6AL2 1L7V 4IU8 4KX6 3QE7 5SV0 1U77 5AJI 4ZP0 3K07 1KQF
+for pdb in 1FFT 1FX8 1KF6 1KPK 1NEK 5OQT 4JR9 2HI7 3O7P 3ZE3 1ZCD 5OC0 1PV6 3OB6 5MRW 5AZC 1Q16 2QFI 2IC8 1RC2 1IWG 2WSX 5JWY 3B5D 3DHW 1PW4 4Q65 4DJI 2R6G 4GD3 5ZUG 6AL2 1L7V 4IU8 4KX6 3QE7 5SV0 1U77 5AJI 4ZP0 3K07 1KQF
+#for pdb in 1L7V 4IU8 4KX6 3QE7 5SV0 1U77 5AJI 4ZP0 3K07 1KQF
 do
 	for num in 1 2 3 4 5 
 	do
-		#cattrj $pdb $num
+#		cattrj $pdb $num
+		:
 		#leaflet_analysis $pdb $num
 		#site_predict $pdb $num
 		#residue_distribution $pdb $num
-		:
 	done
 	cd $CD
-        run_lipid_analysis $pdb
+ 	echo $pdb
+	run_lipid_analysis $pdb
 done
 
 cd $CD
-plot_all
+#plot_all
