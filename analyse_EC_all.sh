@@ -48,9 +48,16 @@ done
 }
 
 phi_analysis () {
-# leaflet residue-by-residue analysis, skip?
-:
+# get data for phi BS
+mkdir -p Phi_analysis
+mkdir -p Phi_analysis/$1
+for lipid in CARD POPE POPG
+do
+	python lipid-contact_phi.py ../$1/md_$1_$2.tpr $1/$1.$2.xtc Phi_analysis/$1/$1.$2.$lipid $lipid
+done
+
 }
+
 
 kinetics () {
 # convergence analysis
@@ -82,6 +89,20 @@ grep -e BB -e SC* Residue_distribution/$1/z_${1}_${2}.pdb | awk '{print $4","$8"
 rm -f Residue_distribution/$1/z_${1}_${2}.pdb
 }
 
+phi_combine () {
+cd Phi_analysis
+for i in 1 2 3 4 5
+do 
+	for lipid in CARD POPG POPE
+	do
+		paste -d ',' */*.$i.$lipid.csv | awk -F, '{for(i=1;i<=NF;i++) t+=$i; print $1","t/5; t=0}' > $lipid.$i.txt
+	done
+	paste -d ',' CARD.$i.txt POPE.$i.txt POPG.$i.txt > LIP.$i.txt 
+done
+
+
+}
+
 plot_all () {
 python EC_analysis/PLOT_leaflets.py
 python EC_analysis/PLOT_predicted_site.py
@@ -91,6 +112,7 @@ python EC_analysis/PLOT_z_analysis.py PHE ILE LEU VAL ALA
 python EC_analysis/PLOT_z_analysis.py ASN SER GLN THR
 python EC_analysis/PLOT_z_analysis.py CYS GLY PRO MET
 python EC_analysis/PLOT_z_analysis.py TRP TYR
+python EC_analysis/PLOT_phi.py
 }
 
 cd $CD
@@ -103,15 +125,18 @@ do
 	for num in 1 2 3 4 5 
 	do
 #		cattrj $pdb $num
-		:
 		#leaflet_analysis $pdb $num
 		#site_predict $pdb $num
 		#residue_distribution $pdb $num
+		: #		phi_analysis $pdb $num		
 	done
 	cd $CD
  	echo $pdb
-	run_lipid_analysis $pdb
+	#phi_combine $pdb
+#	run_lipid_analysis $pdb
 done
+
+phi_combine
 
 cd $CD
 #plot_all
