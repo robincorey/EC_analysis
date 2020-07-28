@@ -25,7 +25,7 @@ def plot_function (): #num, res, lipid, color):
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ax.plot([0,21],[0,0], linewidth=2,linestyle='dashed', color='black')
+ax.plot([-1,20],[0,0], linewidth=2,linestyle='dashed', color='black')
 
 plot_function() 
 

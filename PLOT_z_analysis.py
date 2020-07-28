@@ -11,7 +11,9 @@ import sys
 import re
 
 def get_data(res,pdb):
-	for num in ['1']: #,'2','3','4','5']:
+	print pdb
+	for num in ['1','2','3','4','5']:
+		print num
 		file = open('Residue_distribution/z_%s_%s.pdb' % (pdb,num), "r")	
 		for line in file:
 			if re.search(res,line):
@@ -20,9 +22,9 @@ def get_data(res,pdb):
 					z.append(float(parts[1]))
 
 def plot_data(z,res,i):
-	n, bins, patches = plt.hist(z, bins=30,range=[-30,30], alpha=0)
+	n, bins, patches = plt.hist(z, bins=25,range=[-30,30], alpha=0)
 	bin_mid = (bins[:-1] + bins[1:]) / 2
-	plt.plot(bin_mid/10,n,color=colors[i], label=res)
+	plt.plot(bin_mid/10,n,color=colors[i], label=res) #,linestyle='dashed')
 	limits.append(np.max(n))
 
 colors = ['red','dodgerblue','darkorange','green','saddlebrown']
@@ -46,8 +48,8 @@ for i in np.arange(1,20):
 
 plt.ylabel('propensity', fontsize=25 )
 plt.xlabel('z-axis position (nm)', fontsize=25 )
-ax.plot([-2,-2],[0,800],linewidth=15,color='gray',alpha=0.3)
-ax.plot([2,2],[0,800],linewidth=15,color='gray',alpha=0.3)
+ax.plot([-2,-2],[0,2000],linewidth=15,color='gray',alpha=0.3)
+ax.plot([2,2],[0,2000],linewidth=15,color='gray',alpha=0.3)
 plt.xlim(-2.5,2.5)
 plt.legend(fontsize=15,frameon=False)
 plt.ylim(0,np.max(limits)+(0.1*np.max(limits)))

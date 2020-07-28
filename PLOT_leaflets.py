@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import os
 import sys
+from matplotlib.lines import Line2D
+
 
 def get_total(pdb,leaflet):
 	all_lipids = []
@@ -32,7 +34,7 @@ def plot_function(pdb, lipid, counter, shift, tot_lipids, leaflet):
 			low.append((pdb_tot/tot_lipids)*100)
 		elif leaflet is 'upper':
 			up.append((pdb_tot/tot_lipids)*100)
-		ax.scatter(x, (pdb_tot/tot_lipids)*100, facecolors='none', s=50, edgecolors=colors[counter], linewidths=2) #0.2)
+		ax.scatter(x, (pdb_tot/tot_lipids)*100, facecolors='none', s=25, edgecolors=colors[counter], linewidths=1, alpha=0.5) #0.2)
 	        
 def ttest(up, low, x): 
 	p2 = 1
@@ -64,19 +66,24 @@ for counter, lipid in enumerate(lipids):
 		for pdb in pdbs:
 			tot_lipids = get_total(pdb,leaflet)
 			plot_function(pdb, lipid, counter, shift, tot_lipids, leaflet)
-	bp = ax.boxplot(low, positions=[counter-0.175],showfliers=0)
-	plt.setp(bp['boxes'], color=colors[counter])
-	bp2 = ax.boxplot(up, positions=[counter+0.175],showfliers=0)
-	plt.setp(bp2['boxes'], color=colors[counter])
-#	p2 = ttest(up,low,counter)
-#	print p2
+	medianprops = dict(linewidth=2, color='black')
+	bp = ax.boxplot(low, positions=[counter-0.175],showfliers=0,medianprops=medianprops)
+	plt.setp(bp['boxes'], color='black',linewidth=2)
+	bp2 = ax.boxplot(up, positions=[counter+0.175],showfliers=0,medianprops=medianprops)
+	plt.setp(bp2['boxes'], color='black',linewidth=2)
+	p2 = ttest(up,low,counter)
+	print p2
 	
 #plt.plot([-1,3.175],[67,67],color='orange', linestyle='dashed',linewidth=1,alpha=0.5)
 #plt.plot([-1,3.175],[23,23],color='red', linestyle='dashed',linewidth=1,alpha=0.5)
 #plt.plot([-1,3.175],[10,10],color='royalblue',linestyle='dashed', linewidth=1,alpha=0.5)
 
 plt.ylabel('lipids bound (%)', fontsize=25 )
-plt.yticks(np.arange(0, 76, step=25))
-plt.xticks((-0.175,0.175,0.825,1.175,1.825,2.175), ('inner', 'outer', 'inner', 'outer', 'inner', 'outer'), rotation=45)
+plt.yticks(np.arange(0, 51, step=10),fontsize=20)
+plt.xticks((-0.175,0.175,0.825,1.175,1.825,2.175), ('inner', 'outer', 'inner', 'outer', 'inner', 'outer'), rotation=45, fontsize=20)
 plt.xlim([-0.5,2.5])
-plt.savefig('Figs/Leaflets.png')
+custom_lines = [Line2D([0], [0], color='orange', lw=2),
+                Line2D([0], [0], color='red', lw=2),
+                Line2D([0], [0], color='royalblue', lw=2)]
+plt.legend(custom_lines, ['POPE','POPG','CDL'], fontsize=15,frameon=False)
+plt.savefig('Figs/Leaflets.png',bbox_inches='tight', dpi=900)
