@@ -12,16 +12,22 @@ if [[ ! -f $1/$1.$2.xtc ]]
 then
 	echo -e Protein '\n' System | gmx trjcat -f ../$1/md_$1_$2*.xtc -o $1/$1.$2.xtc -cat -dt 1000
 fi
+echo -e Protein '\n' System | gmx trjconv -f $1/$1.$2.xtc -s ../$1/md_$1_$2.tpr -o $1/$1.$2.pbc.xtc -pbc mol -center
 }
 
 # function for analysis using PyLipID
 # see https://github.com/wlsong/PyLipID
 
-run_lipid_analysis () {
+deprecated_run_lipid_analysis () {
 mkdir -p Sites/$1
 gmx editconf -f ../$1/md_$1_1.tpr -o ../$1/md_$1_1.tpr.gro
 echo Protein | gmx editconf -f ../$1/md_$1_1.tpr.gro -o Sites/$1/prot.pdb -n ../$1/leaflets.ndx
 python3 PyLipID/pylipid.py -f $1/$1.1.xtc $1/$1.2.xtc $1/$1.3.xtc $1/$1.4.xtc $1/$1.5.xtc -c ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro -lipids CARD -lipid_atoms GL0 PO1 PO2 -save_dir Sites/$1/lipid_interactions -cutoffs 0.5 1 -nprot 1 -resi_offset 1 -pdb Sites/$1/prot.pdb
+}
+
+run_lipid_analysis () {
+mkdir -p Sites_new/$1
+python3 $GIT/PyLipID/pylipid.py -f $1/$1.1.pbc.xtc $1/$1.2.pbc.xtc $1/$1.3.pbc.xtc $1/$1.4.pbc.xtc $1/$1.5.pbc.xtc -c ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro -lipids CARD -lipid_atoms GL0 PO1 PO2 -save_dir Sites_new/$1/lipid_interactions -cutoffs 0.5 1 -nprot 1 -resi_offset 1 -pdb Sites/$1/prot.pdb -pymol_gui False -gen_binding_poses 10
 }
 
 # analysis of lipid contacts across the leaflets
@@ -116,9 +122,9 @@ do
 	for num in 1 2 3 4 5 
 	do
 		cattrj $pdb $num
-		leaflet_analysis $pdb $num
-		site_predict $pdb $num
-		residue_distribution $pdb $num
+#		leaflet_analysis $pdb $num
+#		site_predict $pdb $num
+#		residue_distribution $pdb $num
 		#phi_analysis $pdb $num		
 	done
 	cd $CD
@@ -130,4 +136,4 @@ done
 #phi_combine
 
 cd $CD
-plot_all
+#plot_all
