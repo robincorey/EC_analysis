@@ -134,7 +134,7 @@ done
 }
 
 
-CD="/sansom/s156a/bioc1535/EC_MEMPROT/Data/5us_analyses/Sites"
+CD="/sansom/s156a/bioc1535/EC_MEMPROT/5us_analyses/Sites"
 cd $CD
 
 #refine_sites

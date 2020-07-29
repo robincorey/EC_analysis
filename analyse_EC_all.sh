@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # dir with data present
-CD="/sansom/s156a/bioc1535/EC_MEMPROT/Data/5us_analyses"
+CD="/sansom/s156a/bioc1535/EC_MEMPROT/5us_analyses"
 
 # define functions here:
 
