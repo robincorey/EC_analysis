@@ -27,7 +27,8 @@ python3 PyLipID/pylipid.py -f $1/$1.1.xtc $1/$1.2.xtc $1/$1.3.xtc $1/$1.4.xtc $1
 
 run_lipid_analysis () {
 mkdir -p Sites_new/$1
-python3 $GIT/PyLipID/pylipid.py -f $1/$1.1.pbc.xtc $1/$1.2.pbc.xtc $1/$1.3.pbc.xtc $1/$1.4.pbc.xtc $1/$1.5.pbc.xtc -c ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro -lipids CARD -lipid_atoms GL0 PO1 PO2 -save_dir Sites_new/$1/lipid_interactions -cutoffs 0.5 1 -nprot 1 -resi_offset 1 -pdb Sites/$1/prot.pdb -pymol_gui False -gen_binding_poses 10
+for i in {1..5}; do gmx editconf -f ../$1/md_$1_$i.tpr -o ../$1/md_$1_$i.tpr.gro ; done
+python3 $GIT/PyLipID/pylipid.py -f $1/$1.{1..5}.pbc.xtc -c ../$1/md_$1_{1..5}.tpr.gro -lipids CARD -lipid_atoms GL0 PO1 PO2 -save_dir PyLipID_poses/$1/lipid_interactions -cutoffs 0.55 1 -nprot 1 -pymol_gui False -gen_binding_poses 10 -score_weights GL0:10 PO1:10 PO2:10 -stride 10
 }
 
 # analysis of lipid contacts across the leaflets
@@ -115,13 +116,15 @@ python EC_analysis/PLOT_z_analysis.py TRP TYR PHE HIS
 }
 
 cd $CD
-
 # loop through all PDBs analyses
-for pdb in 1FFT 1FX8 1KF6 1KPK 1NEK 5OQT 4JR9 2HI7 3O7P 3ZE3 1ZCD 5OC0 1PV6 3OB6 5MRW 5AZC 1Q16 2QFI 2IC8 1RC2 1IWG 2WSX 5JWY 3B5D 3DHW 1PW4 4Q65 4DJI 2R6G 4GD3 5ZUG 6AL2 1L7V 4IU8 4KX6 3QE7 5SV0 1U77 5AJI 4ZP0 3K07 1KQF
+for pdb in 1FFT 1FX8 1KF6 1KPK 1NEK 5OQT 4JR9 2HI7 3O7P 3ZE3 1ZCD 5OC0 1PV6 3OB6
+#for pdb in 5MRW 5AZC 1Q16 2QFI 2IC8 1RC2 1IWG 2WSX 5JWY 3B5D 3DHW 1PW4 4Q65 4DJI
+#for pdb in 2R6G 4GD3 5ZUG 6AL2 1L7V 4IU8 4KX6 3QE7 5SV0 1U77 5AJI 4ZP0 3K07 1KQF
 do
 	for num in 1 2 3 4 5 
 	do
-		cattrj $pdb $num
+		:
+#		cattrj $pdb $num
 #		leaflet_analysis $pdb $num
 #		site_predict $pdb $num
 #		residue_distribution $pdb $num
