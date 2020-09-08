@@ -18,17 +18,10 @@ echo -e Protein '\n' System | gmx trjconv -f $1/$1.$2.xtc -s ../$1/md_$1_$2.tpr 
 # function for analysis using PyLipID
 # see https://github.com/wlsong/PyLipID
 
-deprecated_run_lipid_analysis () {
-mkdir -p Sites/$1
-gmx editconf -f ../$1/md_$1_1.tpr -o ../$1/md_$1_1.tpr.gro
-echo Protein | gmx editconf -f ../$1/md_$1_1.tpr.gro -o Sites/$1/prot.pdb -n ../$1/leaflets.ndx
-python3 PyLipID/pylipid.py -f $1/$1.1.xtc $1/$1.2.xtc $1/$1.3.xtc $1/$1.4.xtc $1/$1.5.xtc -c ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro ../$1/md_$1_1.tpr.gro -lipids CARD -lipid_atoms GL0 PO1 PO2 -save_dir Sites/$1/lipid_interactions -cutoffs 0.5 1 -nprot 1 -resi_offset 1 -pdb Sites/$1/prot.pdb
-}
-
 run_lipid_analysis () {
-mkdir -p Sites_new/$1
+mkdir -p PyLipID_poses2/$1
 for i in {1..5}; do gmx editconf -f ../$1/md_$1_$i.tpr -o ../$1/md_$1_$i.tpr.gro ; done
-python3 $GIT/PyLipID/pylipid.py -f $1/$1.{1..5}.pbc.xtc -c ../$1/md_$1_{1..5}.tpr.gro -lipids CARD -lipid_atoms GL0 PO1 PO2 -save_dir PyLipID_poses/$1/lipid_interactions -cutoffs 0.55 1 -nprot 1 -pymol_gui False -gen_binding_poses 10 -score_weights GL0:10 PO1:10 PO2:10 -stride 10
+python3 $GIT/PyLipID/pylipid.py -f $1/$1.{1..5}.pbc.xtc -c ../$1/md_$1_{1..5}.tpr.gro -lipids CARD -lipid_atoms GL0 PO1 PO2 -save_dir PyLipID_poses2/$1/lipid_interactions -cutoffs 0.55 1 -nprot 1 -pymol_gui False -gen_binding_poses 10 -score_weights GL0:10 PO1:10 PO2:10 -stride 10
 }
 
 # analysis of lipid contacts across the leaflets
@@ -79,14 +72,31 @@ done
 }
 
 # generation of rough site
-site_predict () {
-mkdir -p Predicting_site/raw
-mkdir -p Predicting_site/res
+site_predict_CARD () {
+mkdir -p Predicting_site_CARD/raw
 for component in 'GL0' 'PO2 PO1' 'GL2 GL1 GL3 GL4' 'C* D*'
 do
 	name=`echo ${component} | tr -d " "*`
-	python ../lipid-contact_construct.py ../$1/md_$1_1.tpr.gro $1/$1.$2.xtc Predicting_site/raw/$1_$2_$name "$component"
-paste -d ',' ${pdb}_*_${lipid}.csv | awk -F, '{for(i=1;i<=NF;i++) t+=$i; print $1","t/5; t=0}' > ${pdb}_$lipid.txt
+	python ../lipid-contact_construct_CARD.py ../$1/md_$1_1.tpr.gro $1/$1.$2.xtc Predicting_site_CARD/raw/$1_$2_$name "$component"
+done
+}
+
+site_predict_POPE () {
+mkdir -p Predicting_site_POPE/raw
+for component in 'NH3' 'PO4' 'GL2 GL1 GL3' 'C* D*'
+do
+        name=`echo ${component} | tr -d " "*`
+        python ../lipid-contact_construct_POPE.py ../$1/md_$1_1.tpr.gro $1/$1.$2.xtc Predicting_site_POPE/raw/$1_$2_$name "$component"
+done
+}
+
+site_predict_POPG () {
+mkdir -p Predicting_site_POPG/raw
+for component in 'GL0' 'PO4' 'GL2 GL1 GL3' 'C* D*' 
+do
+        name=`echo ${component} | tr -d " "*`
+        python ../lipid-contact_construct_POPG.py ../$1/md_$1_1.tpr.gro $1/$1.$2.xtc Predicting_site_POPG/raw/$1_$2_$name "$component"
+	#paste -d ',' ${pdb}_*_${lipid}.csv | awk -F, '{for(i=1;i<=NF;i++) t+=$i; print $1","t/5; t=0}' > ${pdb}_$lipid.txt
 done
 }
 
@@ -107,6 +117,9 @@ rm -f Residue_distribution/$1/z_${1}_${2}.pdb
 plot_all () {
 python EC_analysis/PLOT_leaflets.py
 python EC_analysis/PLOT_predicted_site.py
+python EC_analysis/PLOT_predicted_site_allres_CARD.py
+python EC_analysis/PLOT_predicted_site_allres_POPE.py
+python EC_analysis/PLOT_predicted_site_allres_POPG.py
 python EC_analysis/PLOT_z_analysis.py ARG LYS
 python EC_analysis/PLOT_z_analysis.py ASP GLU ASN GLN CYS
 python EC_analysis/PLOT_z_analysis.py ILE LEU VAL ALA MET
@@ -117,23 +130,22 @@ python EC_analysis/PLOT_z_analysis.py TRP TYR PHE HIS
 
 cd $CD
 # loop through all PDBs analyses
-for pdb in 1FFT 1FX8 1KF6 1KPK 1NEK 5OQT 4JR9 2HI7 3O7P 3ZE3 1ZCD 5OC0 1PV6 3OB6
-#for pdb in 5MRW 5AZC 1Q16 2QFI 2IC8 1RC2 1IWG 2WSX 5JWY 3B5D 3DHW 1PW4 4Q65 4DJI
-#for pdb in 2R6G 4GD3 5ZUG 6AL2 1L7V 4IU8 4KX6 3QE7 5SV0 1U77 5AJI 4ZP0 3K07 1KQF
+for pdb in 1FFT 1FX8 1KF6 1KPK 1NEK 5OQT 4JR9 2HI7 3O7P 3ZE3 1ZCD 5OC0 1PV6 3OB6 5MRW 5AZC 1Q16 2QFI 2IC8 1RC2 1IWG 2WSX 5JWY 3B5D 3DHW 1PW4 4Q65 4DJI 2R6G 4GD3 5ZUG 6AL2 1L7V 4IU8 4KX6 3QE7 5SV0 1U77 5AJI 4ZP0 3K07 1KQF
 do
 	for num in 1 2 3 4 5 
 	do
-		:
 #		cattrj $pdb $num
 #		leaflet_analysis $pdb $num
-#		site_predict $pdb $num
+		site_predict_CARD $pdb $num
+		site_predict_POPE $pdb $num
+		site_predict_POPG $pdb $num
 #		residue_distribution $pdb $num
 		#phi_analysis $pdb $num		
 	done
 	cd $CD
 #	rm -f Phi_analysis/res/$pdb*txt
 #	phi_combine $pdb
-	run_lipid_analysis $pdb
+#	run_lipid_analysis $pdb
 done
 
 #phi_combine
