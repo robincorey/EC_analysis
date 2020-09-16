@@ -23,7 +23,6 @@ do
                 fi
         done
 done
-#sort -r -k3,3 site_resid.txt | grep -v -e dur=0.00 -e dur=nan > sites_above_10ns.txt
 }
 
 # remove sites less than 10 ns (within diffusion)
@@ -36,7 +35,7 @@ grep -v -e ARG -e LYS refine_sites/sites_above_10ns.txt | awk -F',' '{print $0" 
 awk '{print $5}' refine_sites/above_10ns/site_res_no_basic.txt | tr -d 'occ=' > refine_sites/above_10ns/site_res_no_basic_occ.txt
 awk '{print $5}' refine_sites/above_10ns/site_res_basic.txt | tr -d 'occ=' > refine_sites/above_10ns/site_res_basic_occ.txt
 awk '{print $5}' refine_sites/above_10ns/site_res_double_basic.txt | tr -d 'occ=' > refine_sites/above_10ns/site_res_double_basic_occ.txt
-# analyse raw sites
+# analyse raw sites (for supp fig)
 grep -e ARG -e LYS refine_sites/site_refine.txt | awk -F',' '{print $0" resnum="NF-1}' > refine_sites/all_ns/site_res_basic.txt
 grep -e 'ARG.*LYS' -e 'LYS.*ARG' -e 'ARG.*ARG' -e 'LYS.*LYS'  refine_sites/site_refine.txt | awk -F',' '{print $0" resnum="NF-1}' > refine_sites/all_ns/site_res_double_basic.txt
 grep -v -e ARG -e LYS refine_sites/site_refine.txt | awk -F',' '{print $0" resnum="NF-1}' > refine_sites/all_ns/site_res_no_basic.txt
@@ -57,13 +56,8 @@ mkdir -p indv_sites
 while read -r line
 do
         #echo $line
-        pdb=`echo $line | awk '{print $1}'`
-        site=`echo $line | awk '{print $2}'`
-        dur=`echo $line | awk '{print $3}'`
-        R=`echo $line | awk '{print $4}'`
-        occ=`echo $line | awk '{print $5}'`
-        res=`echo $line | awk '{print $6}' | tr -d =res\"`
-        rm -f indv_sites/$pdb.$site.txt
+        read -r pdb site dur R occ res <<<$(echo $line | awk '{print $1" "$2" "$3" "$4" "$5" "$6}')
+	rm -f indv_sites/$pdb.$site.txt
         for i in $(echo $res | sed 's/,/ /g')
         do
                 coords=`grep " $i " ../$pdb/lipid_interactions/Interaction_CARD/coords_Duration.pdb | grep BB | tail -n 1 | awk '{print $4","$(NF-2)}'`
@@ -79,18 +73,81 @@ do
 done < sites_above_10ns.txt 
 }
 
+adj_res () {
+dir=refine_sites/above_10ns/adj_res
+mkdir -p $dir 
+rm -f $dir/occ*txt
+count=0
+while read -r line
+do
+        read -r pdb site dur R occ res resn <<<$(echo $line | awk '{print $1" "$2" "$3" "$4" "$5" "$6" "$7}')
+	rm -f $dir/$pdb.$site.txt
+	#echo $res
+        for i in $(echo $res | tr -d =\'\"[[:alpha:]] | sed 's/,/ /g')
+        do
+		read -r resname x y z <<<$(grep " $i " $CD/pdb_no_chain/$pdb.pdb | grep BB | tail -n 1 | awk '{print $4" "$(NF-5)" "$(NF-4)" "$(NF-3)}')
+		#echo -n "$resname "
+		#echo $resname $x $y $z
+		if [[ $resname == *"LYS"* ]] || [[ $resname == *"ARG"* ]] ; then echo $resname $x $y $z $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/$pdb.$site.txt 
+		fi
+	done
+	echo ""
+	if [[ ! -f $dir/$pdb.$site.txt ]]; then
+		echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.nobasic.txt
+		#echo $res $resn $pdb $site
+	elif [[ $(wc -l <$dir/$pdb.$site.txt) = 1 ]]; then
+		echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.single.basic.txt
+	elif [[ $(wc -l <$dir/$pdb.$site.txt) -ge 2 ]]; then	
+	# this bit compares all of the distances between all of the residues
+		closest=`awk '{ p[NR,0]=$1;p[NR,1]=$2;p[NR,2]=$3;p[NR,3]=$4; for (j=1;j<=NR-1;j++) print sqrt((p[NR,1]-p[j,1])^2+(p[NR,2]-p[j,2])^2+(p[NR,3]-p[j,3])^2)*100 }' $dir/$pdb.$site.txt | sort -n | head -n 1 | awk -F '.' '{print $1}'`
+		if [[ $closest -lt 800 ]]; then echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.double.basic.adj.txt
+		else echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.double.basic.notadj.txt ; fi
+	fi
+       	#rm -f $dir/$pdb.$site.txt
+done < refine_sites/sites_above_10ns.txt
+}
+
+peri_cyto () {
+dir=refine_sites/above_10ns/adj_res
+setup=/sansom/s156a/bioc1535/Ecoli_patch/full_complement/chosen
+rm -f $dir/leaf*txt
+for pdb in 1FFT 1FX8 1KPK 5OQT 4JR9 2HI7 3O7P 1ZCD 5OC0 1PV6 3OB6 5MRW 5AZC 2QFI 2IC8 1RC2 2WSX 5JWY 3B5D 3DHW 1PW4 4Q65 4DJI 2R6G 4GD3 5ZUG 6AL2 1L7V 4IU8 3QE7 5SV0 1U77 5AJI 4ZP0 1KQF
+do
+	prot_z=`grep BB $setup/$pdb/eq2.gro | awk '{sum+=$(NF-3)} END {print int (sum/(NR*0.1))}'`
+	for f in `ls $dir/$pdb*.txt`
+	do
+		z=`awk '{sum+=$(NF-1)} END {print int (sum/NR)}' $f`
+		oc=`awk '{print $NF}' $f | head -n 1`
+		if [[ $z -gt $prot_z ]]; then
+			echo $oc >> $dir/leaf.peri.txt
+		elif [[ $z -lt $prot_z ]]; then
+			echo $oc >> $dir/leaf.cyto.txt
+		fi
+	done
+done
+for pdb in 1IWG 1KF6 1NEK 1Q16 3K07 3ZE3 4KX6
+do
+        prot_z=`grep BB $setup/$pdb/eq2.gro | awk '{sum+=$(NF-3)} END {print int (sum/(NR*0.1))}'`
+        for f in `ls $dir/$pdb*.txt`
+        do
+                z=`awk '{sum+=$(NF-1)} END {print int (sum/NR)}' $f`
+                oc=`awk '{print $NF}' $f | head -n 1`
+                if [[ $z -gt $prot_z ]]; then
+                        echo $oc >> $dir/leaf.cyto.txt
+                elif [[ $z -lt $prot_z ]]; then
+                        echo $oc >> $dir/leaf.peri.txt
+                fi      
+        done    
+done
+}
+
 get_site_2y () {
 cd refine_sites
 mkdir -p site_2y
 while read -r line
 do
-	pdb=`echo $line | awk '{print $1}'`
-        site=`echo $line | awk '{print $2}'`
-        dur=`echo $line | awk '{print $3}'`
-        R=`echo $line | awk '{print $4}'`
-        occ=`echo $line | awk '{print $5}'`
-        res=`echo $line | awk '{print $6}' | tr -d =resid\"`
-       	echo $occ > site_2y/$pdb.$site.txt
+       	read -r pdb site dur R occ res <<<$(echo $line | awk '{print $1" "$2" "$3" "$4" "$5" "$6}')
+	echo $occ > site_2y/$pdb.$site.txt
 	for i in $(echo $res | sed 's/,/ /g')
         do
 		# pylipid and itp misalign by 1
@@ -141,5 +198,7 @@ cd $CD
 #refine_stats
 #get_site_size
 #get_pdb_refine
+#adj_res
+peri_cyto
 #get_site_2y
-analyse_2y
+#analyse_2y
