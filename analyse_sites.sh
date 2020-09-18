@@ -76,7 +76,7 @@ done < sites_above_10ns.txt
 adj_res () {
 dir=refine_sites/above_10ns/adj_res
 mkdir -p $dir 
-rm -f $dir/occ*txt
+rm -f $dir/occ*txt $dir/res*txt
 count=0
 while read -r line
 do
@@ -101,7 +101,9 @@ do
 	# this bit compares all of the distances between all of the residues
 		closest=`awk '{ p[NR,0]=$1;p[NR,1]=$2;p[NR,2]=$3;p[NR,3]=$4; for (j=1;j<=NR-1;j++) print sqrt((p[NR,1]-p[j,1])^2+(p[NR,2]-p[j,2])^2+(p[NR,3]-p[j,3])^2)*100 }' $dir/$pdb.$site.txt | sort -n | head -n 1 | awk -F '.' '{print $1}'`
 		if [[ $closest -lt 800 ]]; then echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.double.basic.adj.txt
-		else echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.double.basic.notadj.txt ; fi
+		echo $(echo $occ | tr -d =\'\"[[:alpha:]]) $resn  >> $dir/res.double.basic.adj.txt
+		else echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.double.basic.notadj.txt 
+		echo $(echo $occ | tr -d =\'\"[[:alpha:]]) $resn  >> $dir/res.double.basic.notadj.txt ; fi
 	fi
        	#rm -f $dir/$pdb.$site.txt
 done < refine_sites/sites_above_10ns.txt
@@ -198,7 +200,7 @@ cd $CD
 #refine_stats
 #get_site_size
 #get_pdb_refine
-#adj_res
-peri_cyto
+adj_res
+#peri_cyto
 #get_site_2y
 #analyse_2y
