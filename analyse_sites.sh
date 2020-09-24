@@ -98,7 +98,7 @@ do
 	elif [[ $(wc -l <$dir/$pdb.$site.txt) = 1 ]]; then
 		echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.single.basic.txt
 	elif [[ $(wc -l <$dir/$pdb.$site.txt) -ge 2 ]]; then	
-	# this bit compares all of the distances between all of the residues
+	# this bit compares all of the xyz distances between all of the residues
 		closest=`awk '{ p[NR,0]=$1;p[NR,1]=$2;p[NR,2]=$3;p[NR,3]=$4; for (j=1;j<=NR-1;j++) print sqrt((p[NR,1]-p[j,1])^2+(p[NR,2]-p[j,2])^2+(p[NR,3]-p[j,3])^2)*100 }' $dir/$pdb.$site.txt | sort -n | head -n 1 | awk -F '.' '{print $1}'`
 		if [[ $closest -lt 800 ]]; then echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.double.basic.adj.txt
 		echo $(echo $occ | tr -d =\'\"[[:alpha:]]) $resn  >> $dir/res.double.basic.adj.txt
