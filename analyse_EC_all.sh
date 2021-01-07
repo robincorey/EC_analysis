@@ -114,6 +114,18 @@ grep -e BB -e SC* Residue_distribution/$1/md_${1}_${2}.po4.pdb |  sed 's/[0-9]-/
 rm -f Residue_distribution/$1/z_${1}_${2}.pdb
 }
 
+residue_distribution_CDL () {
+# CDL GL0+PO*:Arg/Lys and GL0+PO*:Ser/Gly/Thr contacts along Z axis
+mkdir -p Residue_distribution_CDL/$1
+# input unchaged, output to new file
+###python /sansom/s156a/bioc1535/EC_MEMPROT/res_contact_z.cdl.py Residue_distribution/$1/md_${1}_${2}.po4.pdb Residue_distribution/$1/md_${1}_${2}.po4.xtc Residue_distribution_CDL/$1/md_${1}_${2}
+awk -F, '{print $1","($2+$3+$4)}' Residue_distribution_CDL/$1/md_${1}_${2}.csv > Residue_distribution_CDL/$1/md_${1}_${2}_comb.csv
+perl /sansom/s137/bioc1535/Desktop/CG_KIT/make_b_factor.pl Residue_distribution/$1/md_${1}_${2}.po4.pdb Residue_distribution_CDL/$1/md_${1}_${2}_comb.csv 1 Residue_distribution_CDL/$1/z_${1}_${2}.pdb
+grep -e BB -e SC* Residue_distribution_CDL/$1/z_${1}_${2}.pdb |  sed 's/[0-9]-/[0-9] /g' | awk '{print $4","$8","$10}' > Residue_distribution_CDL/z_${1}_${2}.pdb
+#grep -e BB -e SC* Residue_distribution_CDL/$1/md_${1}_${2}.po4.pdb |  sed 's/[0-9]-/[0-9] /g' | awk '{print $4","$8","$10}' > Residue_distribution_CDL/all_${1}_${2}.pdb
+rm -f Residue_distribution_CDL/$1/z_${1}_${2}.pdb
+}
+
 # PLOT final data
 plot_all () {
 #python EC_analysis/PLOT_leaflets.py
@@ -122,12 +134,13 @@ plot_all () {
 #python EC_analysis/PLOT_predicted_site_allres_POPE.py
 #python EC_analysis/PLOT_predicted_site_allres_POPG.py
 #python EC_analysis/PLOT_z_analysis.py ARG LYS
-python EC_analysis/PLOT_z_analysis_allres.py ARG LYS
+#python EC_analysis/PLOT_z_analysis_allres.py ARG LYS
 #python EC_analysis/PLOT_z_analysis.py ASP GLU ASN GLN CYS
 #python EC_analysis/PLOT_z_analysis.py ILE LEU VAL ALA MET
 #python EC_analysis/PLOT_z_analysis.py SER THR GLY PRO 
 #python EC_analysis/PLOT_z_analysis.py TRP TYR PHE HIS
 #python EC_analysis/PLOT_phi.py
+python EC_analysis/PLOT_z_analysis.cdl.py ARG LYS GLY SER THR HIS
 }
 
 cd $CD
@@ -141,7 +154,8 @@ do
 #		site_predict_CARD $pdb $num
 #		site_predict_POPE $pdb $num
 #		site_predict_POPG $pdb $num
-		residue_distribution $pdb $num
+#		residue_distribution $pdb $num
+		residue_distribution_CDL $pdb $num	
 		#phi_analysis $pdb $num		
 	done
 	cd $CD

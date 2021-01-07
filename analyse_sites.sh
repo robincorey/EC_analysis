@@ -76,7 +76,7 @@ done < sites_above_10ns.txt
 adj_res () {
 dir=refine_sites/above_10ns/adj_res
 mkdir -p $dir 
-rm -f $dir/occ*txt $dir/res*txt
+rm -f $dir/occ*txt $dir/res*txt $dir/closest.basic_res.txt $dir/closest.basic_zdiff.txt
 count=0
 while read -r line
 do
@@ -98,10 +98,15 @@ do
 	elif [[ $(wc -l <$dir/$pdb.$site.txt) = 1 ]]; then
 		echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.single.basic.txt
 	elif [[ $(wc -l <$dir/$pdb.$site.txt) -ge 2 ]]; then	
-	# this bit compares all of the xyz distances between all of the residues
-		closest=`awk '{ p[NR,0]=$1;p[NR,1]=$2;p[NR,2]=$3;p[NR,3]=$4; for (j=1;j<=NR-1;j++) print sqrt((p[NR,1]-p[j,1])^2+(p[NR,2]-p[j,2])^2+(p[NR,3]-p[j,3])^2)*100 }' $dir/$pdb.$site.txt | sort -n | head -n 1 | awk -F '.' '{print $1}'`
+	# this bit compares all of the xyz distances between all of the residues. Also gets z position for each in the pair
+	# getting a little unwiedy now
+		read -r closest zdiff <<<$(awk '{ p[NR,0]=$1;p[NR,1]=$2;p[NR,2]=$3;p[NR,3]=$4; for (j=1;j<=NR-1;j++) print sqrt((p[NR,1]-p[j,1])^2+(p[NR,2]-p[j,2])^2+(p[NR,3]-p[j,3])^2)*100"."$4-p[j,3]}' $dir/$pdb.$site.txt | sort -n | head -n 1 | awk -F '.' '{print $1" "$3"."$4}')
+		# to plot all closest distances
+		echo $closest >> $dir/closest.basic_res.txt
 		if [[ $closest -lt 800 ]]; then echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.double.basic.adj.txt
 		echo $(echo $occ | tr -d =\'\"[[:alpha:]]) $resn  >> $dir/res.double.basic.adj.txt
+		# get z difference
+		echo $zdiff | sed 's/-//g' >> $dir/closest.basic_zdiff.txt
 		else echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.double.basic.notadj.txt 
 		echo $(echo $occ | tr -d =\'\"[[:alpha:]]) $resn  >> $dir/res.double.basic.notadj.txt ; fi
 	fi
@@ -191,7 +196,6 @@ do
 	fi	
 done
 }
-
 
 CD="/sansom/s156a/bioc1535/EC_MEMPROT/5us_analyses/Sites"
 cd $CD

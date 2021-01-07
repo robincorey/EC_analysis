@@ -58,7 +58,7 @@ for component in components:
 		else:
 			col = 'yellow'
 		plt.bar(x,sorted_data[i][1],color=col,yerr=sorted_data[i][2],capsize=2,edgecolor='k',linewidth=1)
-	plt.ylabel('propensity', fontsize=15 )
+	plt.ylabel('lipid contacts', fontsize=15 )
 	plt.xticks(np.arange(5),(sorted_data[0][0],sorted_data[1][0],sorted_data[2][0],sorted_data[3][0],sorted_data[4][0]), rotation=45, ha='right',rotation_mode="anchor")
 	plt.ylim([0,sorted_data[0][1]*1.2])
 	plt.savefig('Figs/Predicted_site_%s.png' % component, bbox_inches='tight', dpi=900)
