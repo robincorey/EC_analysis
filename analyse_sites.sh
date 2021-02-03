@@ -76,7 +76,7 @@ done < sites_above_10ns.txt
 adj_res () {
 dir=refine_sites/above_10ns/adj_res
 mkdir -p $dir 
-rm -f $dir/occ*txt $dir/res*txt $dir/closest.basic_res.txt $dir/closest.basic_zdiff.txt
+rm -f $dir/occ*txt $dir/res*txt $dir/closest.basic_res.txt $dir/closest.basic_zdiff.txt $dir/occ.three_plus.basic.adj.txt
 count=0
 while read -r line
 do
@@ -102,14 +102,19 @@ do
 	# getting a little unwiedy now
 		read -r closest zdiff <<<$(awk '{ p[NR,0]=$1;p[NR,1]=$2;p[NR,2]=$3;p[NR,3]=$4; for (j=1;j<=NR-1;j++) print sqrt((p[NR,1]-p[j,1])^2+(p[NR,2]-p[j,2])^2+(p[NR,3]-p[j,3])^2)*100"."$4-p[j,3]}' $dir/$pdb.$site.txt | sort -n | head -n 1 | awk -F '.' '{print $1" "$3"."$4}')
 		# to plot all closest distances
+		read -r closest2 zdiff2 <<<$(awk '{ p[NR,0]=$1;p[NR,1]=$2;p[NR,2]=$3;p[NR,3]=$4; for (j=1;j<=NR-1;j++) print sqrt((p[NR,1]-p[j,1])^2+(p[NR,2]-p[j,2])^2+(p[NR,3]-p[j,3])^2)*100"."$4-p[j,3]}' $dir/$pdb.$site.txt | sort -n | head -n 2 | tail -n 1 | awk -F '.' '{print $1" "$3"."$4}')
 		echo $closest >> $dir/closest.basic_res.txt
 		if [[ $closest -lt 800 ]]; then echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.double.basic.adj.txt
 		echo $(echo $occ | tr -d =\'\"[[:alpha:]]) $resn  >> $dir/res.double.basic.adj.txt
 		# get z difference
 		echo $zdiff | sed 's/-//g' >> $dir/closest.basic_zdiff.txt
+			if [[ $closest2 -lt 800 ]]; then echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.three_plus.basic.adj.txt ; fi
 		else echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.double.basic.notadj.txt 
 		echo $(echo $occ | tr -d =\'\"[[:alpha:]]) $resn  >> $dir/res.double.basic.notadj.txt ; fi
 	fi
+#	if [[ $(wc -l <$dir/$pdb.$site.txt) -ge 3 ]]; then
+#	read -r closest zdiff <<<$(awk '{ p[NR,0]=$1;p[NR,1]=$2;p[NR,2]=$3;p[NR,3]=$4; for (j=1;j<=NR-1;j++) print sqrt((p[NR,1]-p[j,1])^2+(p[NR,2]-p[j,2])^2+(p[NR,3]-p[j,3])^2)*100"."$4-p[j,3]}' $dir/$pdb.$site.txt | sort -n | head -n 1 | awk -F '.' '{print $1" "$3"."$4}')
+#	if [[ $closest -lt 800 ]]; then echo $(echo $occ | tr -d =\'\"[[:alpha:]]) >> $dir/occ.three_plus.basic.adj.txt	; fi ; fi
        	#rm -f $dir/$pdb.$site.txt
 done < refine_sites/sites_above_10ns.txt
 }
