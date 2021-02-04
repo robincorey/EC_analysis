@@ -22,6 +22,8 @@ def get_total(pdb,leaflet):
 		all_lipids.append(np.mean(lipid_total))
 	return np.sum(all_lipids)					
 
+# not usdd in the end
+'''
 def for_propensity(pdb,lipid,shift):
 	# how many lipids are in leaflet
 	top = '/sansom/s156a/bioc1535/Ecoli_patch/full_complement/chosen/%s/topol.top' % ( pdb)
@@ -31,15 +33,19 @@ def for_propensity(pdb,lipid,shift):
 			num = re.sub('[^0-9]', '', line)
 			lipid_count.append(num)	
 	return lipid_count[shift]
+'''
 
-def plot_function(pdb, lipid, counter, shift, tot_lipids, leaflet,propensity):
+def plot_function(pdb, lipid, counter, shift, tot_lipids, leaflet, lipid_present):
 		shift_value = float((shift - 0.5 )*0.35)
 		x = [ counter+shift_value+(0.005*(np.random.randint(-5,5))) ]
 		pdb_av = []
 		for num in ['1', '2', '3','4','5']:
 			ydata = np.loadtxt(fname='Leaflets/%s/%s/%s.%s.xvg' % ( leaflet,pdb,lipid,num ), usecols=(1), comments=['@','#'], unpack=True)
-			pdb_av.append(np.mean((ydata/int(propensity)))) # different
+			#print 'Leaflets/%s/%s/%s.%s.xvg' % ( leaflet,pdb,lipid,num )
+			pdb_av.append(np.mean((ydata/int(lipid_present)))) # different
 		pdb_tot = np.mean(pdb_av)
+		print lipid_present, pdb_av, pdb_tot, tot_lipids, (pdb_tot/tot_lipids)*100
+		sys.exit()
 		if leaflet is 'lower':
 			low.append((pdb_tot/tot_lipids)*100)
 		elif leaflet is 'upper':
@@ -76,9 +82,9 @@ for counter, lipid in enumerate(lipids):
 	for shift, leaflet in enumerate(leaflets):
 		for pdb in pdbs:
 			tot_lipids = get_total(pdb,leaflet)
-			# temp skipping # propensity = for_propensity(pdb,lipid,shift)
-			propensity = concs[counter]
-			plot_function(pdb, lipid, counter, shift, tot_lipids, leaflet,propensity)
+			# temp skipping 
+			lipid_present = concs[counter]
+			plot_function(pdb, lipid, counter, shift, tot_lipids, leaflet, lipid_present)
 	medianprops = dict(linewidth=2, color='black')
 	bp = ax.boxplot(low, positions=[counter-0.175],showfliers=0,medianprops=medianprops)
 	plt.setp(bp['boxes'], color='black',linewidth=2)
