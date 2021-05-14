@@ -41,9 +41,8 @@ for component in components:
 		for pdb in pdbs:
 			total = plot_function(res,pdb,component)
 			plot.append(total)
-		data.append([res,np.nanmean(plot),sc.stats.sem(plot)])
+		data.append([res,np.nanmean(plot),sc.stats.sem(plot,nan_policy='omit')])
 	sorted_data = sorted(data, key=lambda tup: tup[1], reverse=True)
-	print sorted_data
 	for x,i in enumerate(np.arange(20)):
 		if sorted_data[i][0] in ('ARG', 'LYS'):
 			col = 'dodgerblue'
@@ -54,11 +53,11 @@ for component in components:
 		elif sorted_data[i][0] in ('THR', 'SER','HIS','ASN','GLN'):
                         col = 'forestgreen'
 		elif sorted_data[i][0] in ('GLY'):
-                        col = 'red'
+                        col = 'purple'
 		else:
 			col = 'yellow'
 		plt.bar(x,sorted_data[i][1],color=col,yerr=sorted_data[i][2],capsize=2,edgecolor='k',linewidth=1)
-	plt.ylabel('lipid contacts', fontsize=25 )
+	plt.ylabel('contacts', fontsize=25 )
 	plt.xticks(np.arange(20),(sorted_data[0][0],sorted_data[1][0],sorted_data[2][0],sorted_data[3][0],sorted_data[4][0],sorted_data[5][0],sorted_data[6][0],sorted_data[7][0],sorted_data[8][0],sorted_data[9][0],sorted_data[10][0],sorted_data[11][0],sorted_data[12][0],sorted_data[13][0],sorted_data[14][0],sorted_data[15][0],sorted_data[16][0],sorted_data[17][0],sorted_data[18][0],sorted_data[19][0]), rotation=45, ha='right',rotation_mode="anchor", fontsize=25)
 	plt.ylim([0,sorted_data[0][1]*1.2])
 	plt.yticks(fontsize=25)

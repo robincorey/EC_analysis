@@ -41,9 +41,8 @@ for component in components:
 		for pdb in pdbs:
 			total = plot_function(res,pdb,component)
 			plot.append(total)
-		data.append([res,np.nanmean(plot),sc.stats.sem(plot)])
+		data.append([res,np.nanmean(plot),sc.stats.sem(plot,nan_policy='omit')])
 	sorted_data = sorted(data, key=lambda tup: tup[1], reverse=True)
-	print sorted_data[0][1]
 	for x,i in enumerate(np.arange(5)):
 		if sorted_data[i][0] in ('ARG', 'LYS'):
 			col = 'dodgerblue'
@@ -54,11 +53,11 @@ for component in components:
 		elif sorted_data[i][0] in ('THR', 'SER','HIS','ASN','GLN'):
                         col = 'forestgreen'
 		elif sorted_data[i][0] in ('GLY'):
-                        col = 'red'
+                        col = 'purple'
 		else:
 			col = 'yellow'
 		plt.bar(x,sorted_data[i][1],color=col,yerr=sorted_data[i][2],capsize=2,edgecolor='k',linewidth=1)
-	plt.ylabel('lipid contacts', fontsize=15 )
+	plt.ylabel('contacts', fontsize=15 )
 	plt.xticks(np.arange(5),(sorted_data[0][0],sorted_data[1][0],sorted_data[2][0],sorted_data[3][0],sorted_data[4][0]), rotation=45, ha='right',rotation_mode="anchor")
 	plt.ylim([0,sorted_data[0][1]*1.2])
 	plt.savefig('Figs/Predicted_site_%s.png' % component, bbox_inches='tight', dpi=900)

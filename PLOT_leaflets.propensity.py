@@ -45,7 +45,6 @@ def plot_function(pdb, lipid, counter, shift, tot_lipids, leaflet, lipid_present
 			pdb_av.append(np.mean((ydata/int(lipid_present)))) # different
 		pdb_tot = np.mean(pdb_av)
 		print lipid_present, pdb_av, pdb_tot, tot_lipids, (pdb_tot/tot_lipids)*100
-		sys.exit()
 		if leaflet is 'lower':
 			low.append((pdb_tot/tot_lipids)*100)
 		elif leaflet is 'upper':
@@ -102,5 +101,5 @@ plt.xlim([-0.5,2.5])
 custom_lines = [Line2D([0], [0], color='royalblue', lw=2),
                 Line2D([0], [0], color='red', lw=2),
                 Line2D([0], [0], color='orange', lw=2)]
-plt.legend(custom_lines, ['CDL','POPG','POPE'], fontsize=15,frameon=False, loc='upper right')
+plt.legend(custom_lines, ['CDL','PG','PE'], fontsize=15,frameon=False, loc='upper right')
 plt.savefig('Figs/Leaflets.propensity.png',bbox_inches='tight', dpi=900)
