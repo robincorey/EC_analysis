@@ -61,5 +61,5 @@ for component in components:
 	plt.xticks(np.arange(20),(sorted_data[0][0],sorted_data[1][0],sorted_data[2][0],sorted_data[3][0],sorted_data[4][0],sorted_data[5][0],sorted_data[6][0],sorted_data[7][0],sorted_data[8][0],sorted_data[9][0],sorted_data[10][0],sorted_data[11][0],sorted_data[12][0],sorted_data[13][0],sorted_data[14][0],sorted_data[15][0],sorted_data[16][0],sorted_data[17][0],sorted_data[18][0],sorted_data[19][0]), rotation=45, ha='right',rotation_mode="anchor", fontsize=25)
 	plt.ylim([0,sorted_data[0][1]*1.2])
 	plt.yticks(fontsize=25)
-	plt.savefig('Figs/Predicted_site_%s_allres_POPE.png' % component, bbox_inches='tight', dpi=900)
+	plt.savefig('Figs/Predicted_site_%s_allres_POPE.highres.pdf' % component, bbox_inches='tight', dpi=1800,format='pdf')
 	plt.cla()

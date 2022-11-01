@@ -60,5 +60,5 @@ for component in components:
 	plt.ylabel('contacts', fontsize=15 )
 	plt.xticks(np.arange(5),(sorted_data[0][0],sorted_data[1][0],sorted_data[2][0],sorted_data[3][0],sorted_data[4][0]), rotation=45, ha='right',rotation_mode="anchor")
 	plt.ylim([0,sorted_data[0][1]*1.2])
-	plt.savefig('Figs/Predicted_site_%s.png' % component, bbox_inches='tight', dpi=900)
+	plt.savefig('Figs/Predicted_site_%s.highres.pdf' % component, bbox_inches='tight', dpi=1800,format='pdf')
 	plt.cla()

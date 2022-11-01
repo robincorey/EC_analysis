@@ -31,7 +31,7 @@ def plot_function (lipid, color):
 	#	y_smooth = sc.signal.savgol_filter(y_all, 11, 1, deriv=0, delta=1, axis=-1, mode='interp', cval=0.0)
 		plt.plot(x_all, y_all, color=color, linewidth=1) #, alpha=shift/2)
 	#	plt.plot(x_all, y_smooth, color=color, linewidth=1)
-#	plt.savefig('%s_kinetics.png' % (lipid), bbox_inches='tight', dpi=900)
+#	plt.savefig('%s_kinetics.highres.pdf' % (lipid), bbox_inches='tight', dpi=1800,format='pdf')
 
 color = [ 'red', 'light' ]
 
@@ -43,4 +43,4 @@ lipids = { "CARD":"royalblue" , "POPG":"red", "POPE":"orange" }
 for lipid, color in lipids.items():
 	plot_function(lipid, color)
 	
-plt.savefig('all_kinetics.png', bbox_inches='tight', dpi=900)
+plt.savefig('all_kinetics.highres.pdf', bbox_inches='tight', dpi=1800,format='pdf')

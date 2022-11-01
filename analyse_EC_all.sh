@@ -140,7 +140,9 @@ plot_all () {
 #python EC_analysis/PLOT_z_analysis.py SER THR GLY PRO 
 #python EC_analysis/PLOT_z_analysis.py TRP TYR PHE HIS
 #python EC_analysis/PLOT_phi.py
-python EC_analysis/PLOT_z_analysis.cdl.py ARG LYS GLY SER THR HIS
+#python EC_analysis/PLOT_z_analysis.cdl.py ARG LYS GLY SER THR HIS
+#python EC_analysis/PLOT_z_analysis.cdl.normalise.py ARG LYS
+python PLOT_leaflets.propensity.py
 }
 
 cd $CD
@@ -155,8 +157,9 @@ do
 #		site_predict_POPE $pdb $num
 #		site_predict_POPG $pdb $num
 #		residue_distribution $pdb $num
-		residue_distribution_CDL $pdb $num	
+#		residue_distribution_CDL $pdb $num	
 		#phi_analysis $pdb $num		
+		:
 	done
 	cd $CD
 #	rm -f Phi_analysis/res/$pdb*txt

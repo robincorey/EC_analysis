@@ -85,4 +85,4 @@ custom_lines = [Line2D([0], [0], color='orange', lw=2),
                 Line2D([0], [0], color='red', lw=2),
                 Line2D([0], [0], color='royalblue', lw=2)]
 plt.legend(custom_lines, ['POPE','POPG','CDL'], fontsize=15,frameon=False)
-plt.savefig('Figs/Leaflets_bar.png',bbox_inches='tight', dpi=900)
+plt.savefig('Figs/Leaflets_bar.highres.pdf',bbox_inches='tight', dpi=1800,format='pdf')

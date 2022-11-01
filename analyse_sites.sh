@@ -205,11 +205,11 @@ done
 CD="/sansom/s156a/bioc1535/EC_MEMPROT/5us_analyses/Sites"
 cd $CD
 
-#refine_sites
-#refine_stats
-#get_site_size
-#get_pdb_refine
+refine_sites
+refine_stats
+get_site_size
+get_pdb_refine
 adj_res
-#peri_cyto
-#get_site_2y
-#analyse_2y
+peri_cyto
+get_site_2y
+analyse_2y

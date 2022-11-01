@@ -1,7 +1,7 @@
 About
 ====
 
-Simple python and bash scripts used to generate the data used in the following publication: DOI: 10.1126/sciadv.abh2217
+Simple python and bash scripts used to generate the data used in DOI:10.1126/sciadv.abh2217
 
 Scripts 
 ====
